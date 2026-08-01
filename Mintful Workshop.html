@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mintful — MoneySense Workshop</title>
+<link href="https://fonts.cdnfonts.com/css/garet" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --tier:#E8391B; --tier-dark:#c53317; --tier-light:#FEF3F0; --tier-mid:#f9a090;
+    --text-main:#1A1A1A; --text-muted:#6B6B6B; --text-light:#9A9A9A;
+    --border:#E8E4DF; --success:#059669; --error:#dc2626;
+    --accent:#E8391B;
+    --font:'Garet',system-ui,sans-serif; --font-body:'DM Sans','Garet',system-ui,sans-serif;
+    --mono:'DM Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-body);font-size:15px;background:#F8F7F4;color:var(--text-main);display:flex;height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased;}
+
+/* ── Sidebar ── */
+.sidebar{width:260px;background:#fff;border-right:1px solid #e5e5e5;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;padding-bottom:40px;}
+.sidebar-top{padding:28px 24px 20px;border-bottom:1px solid #f0f0f0;}
+.logo{font-family:var(--font);font-size:18px;font-weight:800;color:#0a0a0a;display:flex;align-items:center;gap:8px;letter-spacing:-0.4px;margin-bottom:4px;}
+.logo-sub{font-size:9px;color:#a3a3a3;letter-spacing:2px;text-transform:uppercase;font-weight:500;}
+.nav-section{padding:16px 12px;flex:1;overflow-y:auto;}
+.nav-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#c4c4c4;padding:0 10px;margin-bottom:8px;}
+.nav-item{padding:10px 12px;margin-bottom:2px;border-radius:8px;cursor:pointer;transition:all .25s cubic-bezier(.25,.46,.45,.94);display:flex;align-items:center;gap:10px;border:1px solid transparent;}
+.nav-item:hover{background:#f5f5f5;}
+.nav-item.active{background:#FEF3F0;border-color:rgba(232,57,27,.12);}
+.nav-icon{width:30px;height:30px;border-radius:6px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text-muted);}
+.nav-item.active .nav-icon{background:#FEF3F0;color:#E8391B;}
+.nav-text{flex:1;}
+.nav-title{font-size:12px;font-weight:600;color:#525252;display:block;line-height:1.2;}
+.nav-item.active .nav-title{color:#E8391B;}
+.nav-sub{font-size:10px;color:#c4c4c4;margin-top:1px;display:block;}
+.nav-badge{display:none;}
+.nav-done{margin-left:auto;width:18px;height:18px;border-radius:50%;background:var(--tier);display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;flex-shrink:0;}
+.sidebar-footer{padding:14px 20px;border-top:1px solid #f0f0f0;font-size:11px;color:#d4d4d4;display:flex;align-items:center;gap:6px;}
+
+/* ── Main ── */
+.main-content{flex:1;overflow-y:auto;display:flex;flex-direction:column;background:#F8F7F4;padding-bottom:40px;}
+
+/* ── Dashboard ── */
+#dashboard-view{padding:52px 56px;flex:1;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.dash-header{max-width:860px;margin-bottom:44px;}
+.dash-eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#1A1A1A;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.dash-eyebrow::before{content:'';display:inline-block;width:24px;height:2px;background:var(--accent);border-radius:0;}
+.dash-header h1{font-family:var(--font);font-size:3rem;font-weight:800;line-height:1.05;color:#E8391B;letter-spacing:-2px;margin-bottom:14px;}
+.dash-header p{font-size:1rem;color:#737373;line-height:1.7;max-width:500px;font-weight:400;}
+.review-note{display:inline-flex;align-items:center;gap:6px;margin-top:16px;padding:7px 14px;background:#f8fafc;border:1px solid var(--border);border-radius:20px;font-size:11px;color:var(--text-muted);}
+.review-note a{color:var(--tier);text-decoration:none;font-weight:600;}
+.lesson-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;max-width:1060px;}
+
+/* ── Cards ── */
+.lesson-card{background:#fff;border:1px solid #e5e5e5;border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .3s cubic-bezier(.25,.46,.45,.94),box-shadow .3s ease,border-color .3s ease;display:flex;flex-direction:column;}
+.lesson-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.06);border-color:#ccc;}
+.lesson-card.done{border-color:var(--tier)!important;background:var(--tier-light);}
+.lc-banner{display:none;}
+.lc-body{padding:20px 22px 16px;flex:1;display:flex;flex-direction:column;}
+.lc-num{display:none;}
+.lc-title{font-family:var(--font);font-size:1.12rem;font-weight:700;color:#E8391B;margin-bottom:6px;letter-spacing:-.4px;line-height:1.25;}
+.lc-sub{font-size:.82rem;font-weight:500;color:#6B6B6B;margin-bottom:10px;font-style:italic;}
+.lc-desc{font-size:.875rem;color:var(--text-muted);line-height:1.55;flex:1;font-weight:300;}
+.lc-footer{margin-top:18px;padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.lc-tags{display:flex;gap:8px;flex-wrap:wrap;}
+.lc-tag{font-size:10px;padding:3px 9px;border-radius:20px;background:#f3f2ef;color:#6B6B6B;font-weight:600;}
+.lc-action{font-family:var(--font);font-size:12px;font-weight:700;color:#E8391B;display:flex;align-items:center;gap:4px;transition:gap .2s;white-space:nowrap;}
+.lesson-card:hover .lc-action{gap:8px;}
+.lc-done-badge{font-size:10px;font-weight:700;color:var(--tier);background:var(--tier-light);padding:3px 9px;border-radius:20px;}
+
+/* ── Reader ── */
+.reader-wrap{display:none;flex:1;flex-direction:column;animation:fadeUp .35s ease;}
+.reader-topbar{padding:14px 28px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:18px;position:sticky;top:0;z-index:10;}
+.exit-btn{background:transparent;border:1px solid var(--border);border-radius:8px;padding:7px 16px;font-family:var(--font-body);font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all .2s;}
+.exit-btn:hover{background:#f8fafc;color:var(--text-main);}
+.lesson-breadcrumb{font-size:12px;color:var(--text-light);flex:1;}
+.lesson-breadcrumb strong{color:var(--text-main);}
+.progress-info{display:flex;align-items:center;gap:12px;}
+.progress-counter{font-family:var(--mono);font-size:11px;color:var(--text-light);}
+.progress-track{width:140px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--tier);border-radius:2px;width:0%;transition:width .35s ease;}
+.reader-body{flex:1;overflow:hidden;display:flex;}
+.reader-content-area{flex:1;overflow-y:auto;padding:60px 80px 80px;max-width:780px;margin:0 auto;width:100%;background:#fff;}
+
+/* ── Content typography ── */
+.page-eyebrow{display:none;}
+.reader-content-area h2{font-family:var(--font);font-size:2.5rem;font-weight:800;line-height:1.08;color:#E8391B;letter-spacing:-2px;margin-bottom:24px;}
+.reader-content-area h3{font-family:var(--font);font-size:1.2rem;font-weight:700;color:#0a0a0a;margin:40px 0 12px;letter-spacing:-.3px;}
+.reader-content-area p{font-size:1rem;line-height:1.8;color:#404040;margin-bottom:18px;font-weight:400;}
+.reader-content-area ul,.reader-content-area ol{padding-left:20px;margin-bottom:16px;}
+.reader-content-area li{font-size:1rem;line-height:1.8;color:#404040;margin-bottom:8px;font-weight:400;}
+.key-term{background:rgba(255,255,255,.85);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-left:3px solid var(--tier);border-radius:6px;padding:18px 24px;margin:28px 0;}
+.key-term .kt-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--tier);font-weight:700;margin-bottom:6px;display:block;}
+.key-term .kt-term{font-family:var(--font);font-size:1.1rem;font-weight:700;color:#0a0a0a;margin-bottom:8px;display:block;letter-spacing:-.3px;}
+.key-term p{font-size:.94rem;color:#404040;margin-bottom:0!important;}
+.example-box{background:rgba(255,255,255,.85);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-left:3px solid #d97706;border-radius:6px;padding:18px 24px;margin:26px 0;}
+.example-box .ex-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#d97706;font-weight:700;margin-bottom:8px;display:block;}
+.example-box p{font-size:.94rem;color:#404040;margin-bottom:0!important;}
+.callout{background:#fff;border-left:3px solid #a78bfa;padding:16px 22px;margin:26px 0;display:flex;gap:14px;align-items:flex-start;}
+.callout-icon{font-size:18px;flex-shrink:0;margin-top:2px;}
+.callout p{margin-bottom:0!important;color:#404040;font-size:.94rem;}
+.warning-box{background:#fff;border-left:3px solid #f43f5e;padding:16px 22px;margin:26px 0;}
+.warning-box .wl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#f43f5e;font-weight:700;margin-bottom:6px;display:block;}
+.warning-box p{color:#404040;margin-bottom:0!important;font-size:.94rem;}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin:26px 0;}
+.stat-card{background:#fff;border:1px solid #e8ecf0;border-radius:10px;padding:20px 18px;text-align:center;}
+.stat-num{font-family:var(--font);font-size:2rem;font-weight:700;color:#0a0a0a;display:block;letter-spacing:-.8px;}
+.stat-label{font-size:11px;color:#737373;margin-top:5px;}
+
+/* ── Comparison table ── */
+.comp-table{width:100%;border-collapse:collapse;margin:26px 0;font-size:.93rem;}
+.comp-table th{text-align:left;padding:12px 14px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;border-bottom:2px solid #e5e5e5;font-family:var(--font);}
+.comp-table th:first-child{color:#94a3b8;}
+.comp-table .h-hdb{color:#2563EB;}
+.comp-table .h-bank{color:#d97706;}
+.comp-table td{padding:13px 14px;border-bottom:1px solid #f1f5f9;color:#374151;vertical-align:top;line-height:1.5;}
+.comp-table td:first-child{font-weight:600;color:#0f172a;font-size:.88rem;}
+.comp-table tr:last-child td{border-bottom:none;}
+.comp-table tr:hover td{background:#fafafa;}
+.val-hdb{color:#2563EB;font-weight:600;}
+.val-bank{color:#d97706;font-weight:600;}
+.val-warn{color:#dc2626;font-weight:600;}
+
+/* ── Mortgage visual ── */
+.mortgage-visual{background:#fff;border-radius:12px;border:1px solid #e8ecf0;overflow:hidden;margin:20px 0;}
+.mv-header{background:#0f172a;padding:16px 22px;color:#fff;}
+.mv-header h3{font-family:var(--font);font-weight:700;font-size:13px;margin:0 0 3px;}
+.mv-header p{font-size:10px;color:rgba(255,255,255,.45);margin:0;}
+.mv-stats{display:grid;grid-template-columns:repeat(3,1fr);}
+.mv-stat{padding:16px 18px;border-right:1px solid #e5e5e5;text-align:center;}
+.mv-stat:last-child{border-right:none;}
+.mv-stat-val{font-family:var(--font);font-size:1.5rem;font-weight:700;color:var(--tier);letter-spacing:-.5px;}
+.mv-stat-label{font-size:10px;color:var(--text-muted);margin-top:3px;}
+.mv-amort{padding:18px 22px;}
+.mv-amort-title{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;font-weight:600;}
+.mv-year-row{display:grid;grid-template-columns:50px 1fr 80px;gap:10px;align-items:center;margin-bottom:8px;}
+.mv-year-label{font-size:11px;color:var(--text-muted);font-family:var(--mono);}
+.mv-bar-stack{height:13px;border-radius:6px;overflow:hidden;display:flex;background:#e5e5e5;}
+.mv-interest-bar{background:#fca5a5;height:100%;}
+.mv-capital-bar{background:#93c5fd;height:100%;}
+.mv-year-amt{font-size:11px;color:var(--text-muted);font-family:var(--mono);text-align:right;}
+.mv-legend{display:flex;gap:16px;padding:0 22px 16px;}
+.mv-legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);}
+.mv-legend-dot{width:10px;height:10px;border-radius:3px;}
+
+/* ── Credit card statement ── */
+.cc-statement{background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e8ecf0;margin:20px 0;font-family:var(--mono);}
+.cc-header{background:#1e293b;color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:flex-start;}
+.cc-bank{font-size:16px;font-weight:700;letter-spacing:2px;}
+.cc-type{font-size:10px;color:rgba(255,255,255,.4);margin-top:3px;}
+.cc-number{font-size:13px;color:rgba(255,255,255,.55);letter-spacing:4px;}
+.cc-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
+.cc-sum-cell{background:#f8fafc;padding:14px 18px;}
+.cc-sum-label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.cc-sum-val{font-size:1.1rem;font-weight:700;color:var(--text-main);}
+.cc-sum-val.red{color:#dc2626;}
+.cc-sum-val.amber{color:#d97706;}
+.cc-tx-header{padding:12px 24px 8px;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);display:grid;grid-template-columns:1fr auto auto;gap:16px;border-bottom:1px solid var(--border);}
+.cc-tx-row{padding:11px 24px;display:grid;grid-template-columns:1fr auto auto;gap:16px;align-items:center;border-bottom:1px solid #f1f5f9;}
+.cc-tx-row:last-child{border-bottom:none;}
+.cc-tx-name{font-size:13px;color:var(--text-main);font-family:var(--font);}
+.cc-tx-date{font-size:11px;color:var(--text-muted);}
+.cc-tx-amt{font-size:13px;font-weight:600;text-align:right;}
+.cc-tx-amt.debit{color:#dc2626;}
+.cc-tx-amt.credit{color:#059669;}
+.cc-interest-box{margin:12px 18px;background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:14px 18px;}
+.cc-interest-title{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#9f1239;font-weight:700;margin-bottom:6px;font-family:var(--font);}
+.cc-interest-row{display:flex;justify-content:space-between;font-size:12px;color:#be123c;margin-bottom:4px;}
+.cc-min-warn{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;margin:10px 18px 14px;}
+.cc-min-warn-title{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#92400e;font-weight:700;margin-bottom:4px;font-family:var(--font);}
+.cc-min-warn-text{font-size:12px;color:#78350f;font-family:var(--font);}
+
+/* ── Quiz ── */
+.quiz-wrap{padding-top:16px;}
+.quiz-step{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--tier);font-weight:700;margin-bottom:18px;}
+.quiz-q{font-family:var(--font);font-size:1.55rem;font-weight:600;color:var(--text-main);margin-bottom:28px;line-height:1.3;letter-spacing:-.4px;}
+.options-grid{display:flex;flex-direction:column;gap:10px;}
+.option-btn{display:flex;align-items:center;gap:14px;padding:14px 18px;border:1px solid #e5e5e5;border-radius:8px;background:#fff;cursor:pointer;transition:all .2s;text-align:left;width:100%;}
+.option-letter{width:28px;height:28px;border-radius:6px;background:#f1f5f9;color:#737373;font-family:var(--mono);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.option-text{font-size:.97rem;color:var(--text-main);font-weight:400;line-height:1.4;}
+.option-btn:hover:not(:disabled){border-color:var(--tier-mid);background:var(--tier-light);}
+.option-btn:hover:not(:disabled) .option-letter{background:var(--tier);color:#fff;}
+.option-btn.correct{border-color:var(--success);background:#f0fdf4;}
+.option-btn.correct .option-letter{background:var(--success);color:#fff;}
+.option-btn.wrong{border-color:var(--error);background:#fff1f2;}
+.option-btn.wrong .option-letter{background:var(--error);color:#fff;}
+.feedback-panel{margin-top:20px;padding:18px 22px;border-radius:12px;animation:fadeUp .3s ease;display:none;}
+.feedback-panel.correct-fb{background:#f0fdf4;border:1px solid #bbf7d0;}
+.feedback-panel.wrong-fb{background:#fff1f2;border:1px solid #fecdd3;}
+.feedback-head{font-weight:700;font-size:.97rem;margin-bottom:5px;}
+.feedback-panel.correct-fb .feedback-head{color:var(--success);}
+.feedback-panel.wrong-fb .feedback-head{color:var(--error);}
+.feedback-body{font-size:.9rem;color:#475569;line-height:1.5;}
+
+/* ── Reader footer ── */
+.reader-footer{padding:18px 76px;background:#fff;border-top:1px solid #e5e5e5;display:flex;justify-content:flex-end;position:sticky;bottom:0;}
+.btn-next{background:var(--tier);color:#fff;border:none;padding:13px 34px;border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px;}
+.btn-next:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);}
+.btn-next:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+/* ── Completion ── */
+.completion-screen{display:none;flex:1;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:60px;animation:fadeUp .4s ease;}
+.completion-icon{margin-bottom:22px;animation:pop .4s ease .1s both;}
+.completion-icon svg{stroke:var(--tier);}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.completion-screen h2{font-family:var(--font);font-size:2rem;font-weight:700;letter-spacing:-.4px;margin-bottom:10px;}
+.completion-screen p{font-size:1.05rem;color:var(--text-muted);max-width:380px;line-height:1.6;margin-bottom:30px;}
+.btn-home{background:var(--tier);color:#fff;border:none;padding:15px 38px;border-radius:12px;font-family:var(--font-body);font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-home:hover{filter:brightness(1.1);transform:translateY(-2px);}
+
+/* ── Activity ── */
+.activity-wrap{padding-top:8px;}
+.activity-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--tier);font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+
+/* ── Mobile ── */
+.mobile-topbar{display:none;align-items:center;justify-content:space-between;padding:14px 20px;background:#fff;border-bottom:1px solid #e5e5e5;position:sticky;top:0;z-index:20;}
+.mobile-logo{font-family:var(--font);font-weight:700;font-size:17px;color:#0f172a;}
+.ham-btn{background:rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:8px;cursor:pointer;color:#334155;display:flex;align-items:center;}
+@media(max-width:600px){
+    body{overflow:auto;height:auto;flex-direction:column;}
+    .sidebar{display:none;width:100%;}
+    .sidebar.open{display:flex;position:fixed;inset:0;z-index:100;overflow-y:auto;height:auto;}
+    .mobile-topbar{display:flex;}
+    #dashboard-view{padding:24px 20px;}
+    .lesson-grid{grid-template-columns:1fr;}
+    .reader-content-area{padding:28px 20px 80px;}
+    .reader-footer{padding:14px 20px;}
+    .reader-topbar{padding:12px 14px;gap:10px;}
+    .progress-track{width:80px;}
+    .mv-stats{grid-template-columns:1fr;}
+    .cc-summary{grid-template-columns:1fr;}
+    .comp-table td,.comp-table th{padding:10px 10px;font-size:.82rem;}
+    .ham-reader{display:flex!important;}
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+        <div class="logo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-4px;flex-shrink:0"><path d="M12 22s8-4 8-10a8 8 0 0 0-8-8 8 8 0 0 0-8 8c0 6 8 10 8 10z"/><line x1="12" y1="22" x2="12" y2="12"/></svg>
+            Mintful
+        </div>
+    </div>
+    <div class="nav-section">
+        <div class="nav-label" style="display:none"></div>
+        <div id="nav-items"></div>
+    </div>
+    <div class="sidebar-footer">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M12 22s8-4 8-10a8 8 0 0 0-8-8 8 8 0 0 0-8 8c0 6 8 10 8 10z"/><line x1="12" y1="22" x2="12" y2="12"/></svg>
+        <span>mintfulyouth.com</span>
+    </div>
+</div>
+
+<div class="main-content" id="main-content">
+    <div class="mobile-topbar">
+        <button class="ham-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <svg width="20" height="20" viewBox="0 0 22 22" fill="none"><rect y="3" width="22" height="2.5" rx="1.25" fill="currentColor"/><rect y="10" width="22" height="2.5" rx="1.25" fill="currentColor"/><rect y="17" width="22" height="2.5" rx="1.25" fill="currentColor"/></svg>
+        </button>
+        <div class="mobile-logo">Mintful</div>
+        <div style="width:38px"></div>
+    </div>
+
+    <div id="dashboard-view">
+        <div class="dash-header">
+            <div class="dash-eyebrow" id="unit-eyebrow">Unit 1</div>
+            <h1 id="module-title-display">Loading…</h1>
+            <p id="module-desc-display"></p>
+            <div class="review-note">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Figures accurate as at July 2025 · Sourced from MAS, HDB, CPF Board, CBS, IRAS &amp; gov.sg ·
+                <a href="https://www.moneysense.gov.sg" target="_blank" rel="noopener">MoneySense →</a>
+            </div>
+        </div>
+        <div class="lesson-grid" id="lesson-grid"></div>
+    </div>
+
+    <div class="reader-wrap" id="reader-view">
+        <div class="reader-topbar">
+            <button class="ham-btn ham-reader" style="display:none" onclick="document.getElementById('sidebar').classList.toggle('open')">
+                <svg width="20" height="20" viewBox="0 0 22 22" fill="none"><rect y="3" width="22" height="2.5" rx="1.25" fill="currentColor"/><rect y="10" width="22" height="2.5" rx="1.25" fill="currentColor"/><rect y="17" width="22" height="2.5" rx="1.25" fill="currentColor"/></svg>
+            </button>
+            <button class="exit-btn" onclick="closeLesson()">← Exit</button>
+            <div class="lesson-breadcrumb" id="reader-breadcrumb">Unit 1 / <strong>Lesson</strong></div>
+            <div class="progress-info">
+                <span class="progress-counter" id="page-counter">1 / 4</span>
+                <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+            </div>
+        </div>
+        <div class="reader-body">
+            <div class="reader-content-area" id="reader-content"></div>
+        </div>
+        <div class="reader-footer">
+            <button class="btn-next" id="next-btn" onclick="nextPage()">Continue <span>→</span></button>
+        </div>
+    </div>
+
+    <div class="completion-screen" id="completion-view">
+        <div class="completion-icon">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"/><polyline points="8 12 11 15 16 9"/>
+            </svg>
+        </div>
+        <h2 id="completion-title">Lesson Complete</h2>
+        <p id="completion-msg">Great work.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+            <button class="btn-home" onclick="closeLesson()">Back to Lessons</button>
+            <button class="btn-home" id="next-lesson-btn" style="display:none;background:var(--tier-dark)" onclick="openNextLesson()">Next Lesson →</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ── State ──
+let currentTierKey = 'pro';
+let currentModuleKey = null;
+let currentLessonData = null;
+let currentLessonMeta = null;
+let currentPageIndex = 0;
+let quizAnswered = false;
+let completedLessons = new Set();
+
+// ── Icons ──
+const iconCC = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`;
+const iconHome = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
+const iconShield = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M12 2L4 5v6c0 5 3.5 9.5 8 11 4.5-1.5 8-6 8-11V5l-8-3z"/><polyline points="9 12 11 14 15 10"/></svg>`;
+const iconDoc = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+const iconQ = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><circle cx="12" cy="12" r="9"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12" y2="17.01"/></svg>`;
+const iconFlask = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><path d="M9 3h6M9 3v8l-4 8a1 1 0 0 0 .9 1.5h12.2A1 1 0 0 0 19 19l-4-8V3"/><line x1="7.5" y1="15" x2="16.5" y2="15"/></svg>`;
+
+// ── Curricula ──
+const curricula = { pro: { units: [
+
+// ══════════════════════════════════════════════════
+// UNIT 1 — CREDIT & LOANS
+// ══════════════════════════════════════════════════
+{
+key:'credit', icon: iconCC, title:'Credit & Loans', eyebrow:'Unit 1',
+desc:'How credit scoring works in Singapore, the real cost of borrowing, and the hidden risks in BNPL products.',
+lessons:[
+{
+id:1,
+title:'Your CBS Credit Score',
+subtitle:'The number that decides your mortgage rate',
+desc:'Every loan application triggers a credit check. Here\'s exactly how your CBS score is calculated, what damages it most, and how to see your own report.',
+pages:[
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 1 · Lesson 1</div>
+<h2>What Is the CBS Credit Score?</h2>
+<p>In Singapore, the <strong>Credit Bureau Singapore (CBS)</strong> maintains a record of every credit facility you have ever held — credit cards, personal loans, car loans, mortgages, and more. Every time you apply for credit, banks pull your CBS report to assess risk.</p>
+<div class="key-term">
+    <span class="kt-label">Key Term</span>
+    <span class="kt-term">CBS Credit Score</span>
+    <p>A numerical score between <strong>1000 (highest risk) and 2000 (lowest risk)</strong>. The higher your score, the more confident banks are that you will repay. Your score determines whether your loan application is approved, and at what interest rate.</p>
+</div>
+<h3>Risk Grades</h3>
+<p>CBS also assigns a letter grade alongside the number:</p>
+<div class="stat-row">
+    <div class="stat-card"><span class="stat-num" style="color:#059669">AA</span><div class="stat-label">1911–2000<br>Minimal Risk</div></div>
+    <div class="stat-card"><span class="stat-num" style="color:#16a34a">BB</span><div class="stat-label">1844–1910<br>Low Risk</div></div>
+    <div class="stat-card"><span class="stat-num" style="color:#ca8a04">CC–EE</span><div class="stat-label">1782–1843<br>Medium Risk</div></div>
+    <div class="stat-card"><span class="stat-num" style="color:#dc2626">FF–HH</span><div class="stat-label">1000–1781<br>High Risk</div></div>
+</div>
+<p>Most banks want to see a score above 1844 (BB or better) for standard loan approval. A lower grade doesn't mean automatic rejection — but it usually means a higher interest rate, a lower approved amount, or stricter conditions.</p>
+<div class="callout">
+    <div class="callout-icon">💡</div>
+    <p><strong>You can check your own score without affecting it.</strong> Go to creditbureau.com.sg or through SingPass. One free report per year; additional checks cost S$6.42. Checking your own score is a "soft enquiry" and has zero impact on your credit rating.</p>
+</div>
+`},
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 1 · Lesson 1</div>
+<h2>What Affects Your CBS Score?</h2>
+<p>The exact CBS algorithm is proprietary, but the five main factors — weighted by their relative impact — are well documented:</p>
+<h3>1. Payment History <span style="color:#dc2626;font-size:.9rem">(Most Important)</span></h3>
+<p>Whether you pay on time, every time. A single missed payment — even on a small credit card balance — can drop your score significantly and stays on your CBS record for <strong>up to 3 years</strong>. Set up autopay for at least the minimum payment on every credit facility as a backstop. You never want to accidentally miss a payment.</p>
+<h3>2. Credit Utilisation</h3>
+<p>The percentage of your available credit limit currently in use. If your total credit card limit across all cards is S$20,000 and you have S$14,000 outstanding, your utilisation is 70% — which signals financial stress to lenders. The general guideline is to keep utilisation below 30%. Paying down balances raises your score quickly.</p>
+<h3>3. Length of Credit History</h3>
+<p>The longer your track record of responsible borrowing, the better. This is why closing your oldest credit card — even one you rarely use — can slightly hurt your score. Older accounts help your average credit age.</p>
+<h3>4. Recent Credit Applications</h3>
+<p>Every time you apply for a new loan or credit card, the lender does a "hard enquiry" on your CBS report. Multiple hard enquiries in a short period signal financial desperation to lenders and reduces your score. Avoid applying for several credit products at once.</p>
+<h3>5. Types of Credit</h3>
+<p>Having a healthy mix of credit types (credit card, car loan, mortgage) can positively signal credit management ability. Less important than the factors above.</p>
+<div class="warning-box">
+    <span class="wl">Common Mistake</span>
+    <p>Applying for 3–4 credit cards at once when setting up your finances will trigger multiple hard enquiries simultaneously. Each enquiry may reduce your score by a few points. Space out new credit applications by at least 3–6 months.</p>
+</div>
+`},
+{ type:'quiz',
+    question:'Which of the following would MOST damage your CBS credit score?',
+    options:[
+        'Checking your own CBS credit report online',
+        'Missing a credit card payment by 35 days',
+        'Having only one credit card instead of three',
+        'Closing an old credit card you no longer use'
+    ],
+    answer:1,
+    explanation:'A missed payment is the most damaging factor in your credit history. Even one 30-day late payment can significantly reduce your score and remains on your CBS record for years. Checking your own report has zero impact (soft enquiry). Having fewer cards or closing old cards has minor effects by comparison.'
+},
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 1 · Lesson 1</div>
+<h2>Building and Protecting Your Score</h2>
+<p>A strong CBS score is built slowly and damaged quickly. The same principles apply whether you are starting from scratch or repairing past damage.</p>
+<h3>Fundamentals</h3>
+<ul>
+    <li><strong>Autopay the minimum, every time.</strong> Set this up immediately for every credit facility. The minimum is not a target — it is a floor to protect your score. Always pay in full when possible.</li>
+    <li><strong>Keep utilisation below 30%.</strong> If your limit is S$5,000, keep your outstanding balance below S$1,500. If you regularly spend more, request a limit increase rather than exceeding the threshold.</li>
+    <li><strong>Let old accounts age.</strong> Resist the urge to cancel cards you don't use frequently — unless there's a compelling reason. The history helps your score.</li>
+    <li><strong>Space out credit applications.</strong> Particularly important before a major loan application (mortgage). Do not apply for new credit in the 6–12 months before you plan to buy a flat.</li>
+</ul>
+<h3>Disputing Errors</h3>
+<p>Errors on CBS reports are more common than people realise — an account showing as unpaid when it was settled, a hard enquiry from a lender you never approached. Review your report annually. Dispute any inaccuracies directly with CBS; they have a formal dispute process. An error could be costing you a better rate without your knowledge.</p>
+<div class="example-box">
+    <span class="ex-label">Real Impact</span>
+    <p>A CBS score of 1900 (AA) vs 1750 (FF) on a S$500,000 mortgage over 25 years could mean a difference of 0.5–1.0% in interest rate — which translates to roughly S$40,000–80,000 in additional total interest paid over the loan tenure. Your credit score has a direct dollar value.</p>
+</div>
+`}
+]
+},
+{
+id:2,
+title:'The Real Cost of Borrowing',
+subtitle:'Flat rate, EIR, and the credit card interest trap',
+desc:'Banks are legally required to show you the real interest rate. Most borrowers never look for it. One number to always demand before signing anything.',
+pages:[
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 1 · Lesson 2</div>
+<h2>Flat Rate vs Effective Interest Rate</h2>
+<p>When a bank advertises a personal loan or car loan, they typically quote a <strong>flat rate</strong>. It sounds straightforward, but it systematically understates the true cost of borrowing.</p>
+<div class="key-term">
+    <span class="kt-label">Definition</span>
+    <span class="kt-term">Flat Rate</span>
+    <p>Interest calculated on the <em>original full loan amount</em> for the entire loan period — even as you progressively pay back the principal month by month. This makes the rate appear lower than it actually is.</p>
+</div>
+<div class="key-term">
+    <span class="kt-label">Definition</span>
+    <span class="kt-term">Effective Interest Rate (EIR)</span>
+    <p>The true annual cost of borrowing, accounting for the declining outstanding balance as you make monthly repayments. This is the real rate you should use to compare loan products. MAS requires all lenders in Singapore to disclose EIR — always find this number before signing.</p>
+</div>
+<h3>Why the Difference Matters</h3>
+<p>For a typical monthly repayment loan, <strong>EIR is roughly 1.8–2× the flat rate</strong>. A loan advertised at "3% flat" actually costs closer to 5.5% EIR. The gap exists because the flat rate ignores that your outstanding balance shrinks every month — yet you are still charged interest on the original full amount.</p>
+<div class="example-box">
+    <span class="ex-label">Worked Example</span>
+    <p><strong>S$50,000 car loan · 2.5% flat · 5 years (60 months)</strong><br><br>
+    Total interest at flat rate: S$50,000 × 2.5% × 5 = <strong>S$6,250</strong><br>
+    Monthly repayment: (S$50,000 + S$6,250) ÷ 60 = <strong>S$938/month</strong><br><br>
+    But by month 30, you have repaid ~S$25,000 — yet the bank is still charging interest on the full S$50,000.<br><br>
+    True EIR ≈ <strong>4.7%</strong> — nearly double what was advertised.</p>
+</div>
+<p>This rule applies to personal loans and car loans in Singapore. For mortgages, banks typically quote the actual annual rate directly (since mortgages reprice regularly). Always verify by looking at the loan offer's fine print for the EIR disclosure.</p>
+`},
+{ type:'quiz',
+    question:'A bank advertises a personal loan at "3.88% flat rate" over 3 years. What is the approximate true Effective Interest Rate you will pay?',
+    options:[
+        '3.88% — flat rate and EIR are the same thing',
+        'About 1.9% — EIR is half the flat rate',
+        'About 7.3% — EIR is roughly 1.9× the flat rate',
+        'It varies and cannot be estimated'
+    ],
+    answer:2,
+    explanation:'For standard monthly repayment loans, EIR is approximately 1.8–2× the flat rate. A 3.88% flat rate converts to roughly 7–7.5% EIR. Banks in Singapore are legally required to disclose EIR — always ask for it, or look for it in the loan offer document. Never compare two loans using their flat rates alone.'
+},
+{ type:'interactive', content:`
+<div class="activity-label">Interactive · Credit Card Statement</div>
+<p style="font-size:.95rem;color:#404040;margin-bottom:20px;line-height:1.7">This is what a real Singapore credit card statement looks like. Study the minimum payment trap at the bottom — this is one of the most expensive mistakes in personal finance.</p>
+<div class="cc-statement">
+    <div class="cc-header">
+        <div><div class="cc-bank">DBS BANK</div><div class="cc-type">LIVE FRESH CARD · STATEMENT</div></div>
+        <div class="cc-number">•••• •••• •••• 4821</div>
+    </div>
+    <div class="cc-summary">
+        <div class="cc-sum-cell"><div class="cc-sum-label">Statement Date</div><div class="cc-sum-val">15 Jul 2025</div></div>
+        <div class="cc-sum-cell"><div class="cc-sum-label">Total Outstanding</div><div class="cc-sum-val red">S$4,380.00</div></div>
+        <div class="cc-sum-cell"><div class="cc-sum-label">Minimum Payment</div><div class="cc-sum-val amber">S$87.60</div></div>
+    </div>
+    <div class="cc-tx-header"><div>Description</div><div>Date</div><div>Amount</div></div>
+    <div class="cc-tx-row"><div><div class="cc-tx-name">Japan Trip — Singapore Airlines</div><div class="cc-tx-date">02 Jun</div></div><div></div><div class="cc-tx-amt debit">S$1,850.00</div></div>
+    <div class="cc-tx-row"><div><div class="cc-tx-name">Hotel Shinjuku (3 nights)</div><div class="cc-tx-date">08 Jun</div></div><div></div><div class="cc-tx-amt debit">S$620.00</div></div>
+    <div class="cc-tx-row"><div><div class="cc-tx-name">Shopee — Electronics</div><div class="cc-tx-date">22 Jun</div></div><div></div><div class="cc-tx-amt debit">S$480.00</div></div>
+    <div class="cc-tx-row"><div><div class="cc-tx-name">FairPrice Groceries</div><div class="cc-tx-date">28 Jun</div></div><div></div><div class="cc-tx-amt debit">S$380.00</div></div>
+    <div class="cc-tx-row"><div><div class="cc-tx-name">Grabfood / Dining</div><div class="cc-tx-date">Various</div></div><div></div><div class="cc-tx-amt debit">S$650.00</div></div>
+    <div class="cc-tx-row"><div><div class="cc-tx-name">Cashback Earned</div><div class="cc-tx-date">30 Jun</div></div><div></div><div class="cc-tx-amt credit">−S$40.00</div></div>
+    <div class="cc-min-warn">
+        <div class="cc-min-warn-title">⚠ Minimum Payment Warning</div>
+        <div class="cc-min-warn-text">If you pay only the minimum S$87.60/month, it will take <strong>over 8 years</strong> to clear this balance. Total interest paid will exceed <strong>S$3,600</strong> — on top of what you already owe.</div>
+    </div>
+    <div class="cc-interest-box">
+        <div class="cc-interest-title">Interest Calculation (if only minimum paid)</div>
+        <div class="cc-interest-row"><span>Annual interest rate</span><span>27.9% p.a.</span></div>
+        <div class="cc-interest-row"><span>Daily rate</span><span>0.0764% per day</span></div>
+        <div class="cc-interest-row"><span>Interest this month (est.)</span><span>S$102.00</span></div>
+        <div class="cc-interest-row" style="margin-top:6px;padding-top:6px;border-top:1px solid #fecdd3;font-weight:700"><span>Interest exceeds minimum payment</span><span style="color:#9f1239">+S$14.40</span></div>
+    </div>
+</div>
+<div class="callout" style="margin-top:20px">
+    <div class="callout-icon">💡</div>
+    <p><strong>The rule:</strong> If you pay your full statement balance by the due date every month, you pay <em>zero interest</em> — the grace period is free credit. The moment you carry a balance, interest accrues daily at ~26–30% p.a. Credit cards are an excellent tool if paid in full monthly, and a debt trap otherwise.</p>
+</div>
+`},
+{ type:'quiz',
+    question:'You have a S$3,000 credit card balance at 27.9% p.a. You pay the S$60 minimum each month without adding new spending. What happens?',
+    options:[
+        'The balance clears in 50 months (about 4 years)',
+        'The balance clears in about 8–9 years, with total interest exceeding S$2,000',
+        'The balance stays the same because interest equals the minimum payment',
+        'The bank waives interest after 6 months of minimum payments'
+    ],
+    answer:1,
+    explanation:'At 27.9% p.a., monthly interest on S$3,000 is roughly S$70 — which exceeds a S$60 minimum payment. So paying the minimum each month means the balance actually grows for a period before slowly declining. This is the minimum payment trap. The correct action is always to pay the full balance if possible, or at minimum as much above the minimum as you can afford.'
+}
+]
+},
+{
+id:3,
+title:'Buy Now, Pay Later: The Full Picture',
+subtitle:'Interest-free instalments are not as harmless as they look',
+desc:'BNPL services have transformed how Singapore spends. What most users don\'t know about how these products work — and what they risk.',
+pages:[
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 1 · Lesson 3</div>
+<h2>How BNPL Works in Singapore</h2>
+<p>Buy Now, Pay Later services — <strong>Atome, Grab PayLater, ShopBack Pay Later, Pace</strong> — allow you to split purchases into 3–4 equal instalments, typically over 6–12 weeks, at zero interest if you pay on time.</p>
+<p>On the surface, this looks like free credit. A S$300 purchase becomes three S$100 payments — the first at checkout, the rest over the following weeks. For budgeting purposes, spreading a large expense feels more manageable.</p>
+<h3>How They Make Money</h3>
+<p>BNPL providers are not charities. Their revenue model has two components:</p>
+<ul>
+    <li><strong>Merchant fees:</strong> Retailers pay the BNPL provider 2–6% of each transaction for access to the customer base and the psychological frictionlessness that increases conversion and average order value.</li>
+    <li><strong>Late fees:</strong> Typically 3–8% of the instalment amount per missed payment. If you miss a S$100 instalment on Atome, you may pay a S$3–8 fee immediately — and the balance does not go away.</li>
+</ul>
+<div class="key-term">
+    <span class="kt-label">Key Mechanism</span>
+    <span class="kt-term">The Purchase Threshold Effect</span>
+    <p>Traditional credit asks: "Can I afford S$300?" BNPL reframes the question to: "Can I afford S$100 this week?" The lower psychological threshold causes users to make purchases they would not otherwise have made. Research consistently shows BNPL users spend 20–45% more than cash users on comparable purchases.</p>
+</div>
+`},
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 1 · Lesson 3</div>
+<h2>The Risks You Need to Know</h2>
+<h3>1. CBS Credit Score Impact</h3>
+<p>Since 2024, larger BNPL providers in Singapore are required to report significant defaults and delinquencies to the Credit Bureau Singapore. A missed payment that goes unresolved for an extended period can now appear on your CBS report — affecting your mortgage application years later.</p>
+<h3>2. Invisible Stacking</h3>
+<p>Because BNPL plans feel small, it is easy to accumulate multiple active plans simultaneously. Four BNPL plans totalling S$1,200 in deferred payments is a real liability — but it does not appear in your regular banking app, and there is no consolidated view across providers.</p>
+<h3>3. Cash Flow Disruption</h3>
+<p>BNPL creates fixed future payment obligations that auto-debit from your account. If your salary is delayed or an unexpected expense hits, the auto-debit may fail — triggering late fees and potentially triggering cascade failures across multiple plans.</p>
+<div class="warning-box">
+    <span class="wl">MAS Guidance</span>
+    <p>The Monetary Authority of Singapore classifies many BNPL products as falling outside traditional credit regulation, which means they carry fewer consumer protections than credit cards. There is no mandatory cooling-off period, and dispute resolution processes vary significantly between providers. Read the terms of each service carefully before enrolling.</p>
+</div>
+<h3>When Is BNPL Reasonable?</h3>
+<p>BNPL is not inherently harmful. It is reasonable when: (1) you would have made the purchase anyway with cash, (2) you have confirmed the repayment dates align with your cash flow, and (3) you are using it to manage timing rather than to afford something you cannot actually pay for. It becomes a problem when it is used as a substitute for savings or to purchase things that stretch your budget.</p>
+`},
+{ type:'quiz',
+    question:'You have four active BNPL plans totalling S$800 in upcoming instalments this month. You miss one S$80 payment. What is the most likely outcome?',
+    options:[
+        'Nothing — BNPL missed payments have no consequences in Singapore',
+        'The BNPL provider immediately reports you to CBS and you are blacklisted',
+        'You are charged a late fee, the amount remains due, and persistent default may now affect your CBS report',
+        'The plan is automatically cancelled and remaining instalments are waived'
+    ],
+    answer:2,
+    explanation:'BNPL late payments typically incur immediate fees (3–8% of the instalment). The debt does not disappear. Under MAS regulatory developments since 2024, larger providers may report significant defaults to CBS — meaning a pattern of missed BNPL payments can now affect the credit score that determines your future mortgage rate. Always ensure BNPL auto-debit dates have sufficient funds in your account.'
+}
+]
+}
+]
+},
+
+// ══════════════════════════════════════════════════
+// UNIT 2 — BUYING PROPERTY
+// ══════════════════════════════════════════════════
+{
+key:'property', icon: iconHome, title:'Buying Property in Singapore', eyebrow:'Unit 2',
+desc:'The Singapore housing landscape, HDB loan vs bank loan in full detail, and the hidden costs that shock first-time buyers.',
+lessons:[
+{
+id:1,
+title:'The Singapore Housing Landscape',
+subtitle:'HDB, EC, private — what\'s available and who can buy it',
+desc:'Singapore\'s housing market has more rules than almost anywhere in the world. Knowing them before you start looking saves years of frustration.',
+pages:[
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 2 · Lesson 1</div>
+<h2>Public vs Private Housing</h2>
+<p>Singapore operates a dual housing market: a heavily subsidised <strong>public housing system</strong> managed by the Housing & Development Board (HDB), and a market-priced <strong>private property sector</strong>. Roughly 80% of Singapore residents live in HDB flats.</p>
+<h3>HDB Housing</h3>
+<ul>
+    <li><strong>BTO (Build-To-Order):</strong> New flats purchased directly from HDB before construction. Heavily subsidised — the primary route for first-time buyers. 3–5 year wait from application to key collection. Subject to strict eligibility rules.</li>
+    <li><strong>Resale HDB:</strong> Existing flats transacted on the open market between individuals. No wait time; higher prices than BTO; more location flexibility. Eligible for CPF Housing Grant if conditions are met.</li>
+    <li><strong>Executive Condominium (EC):</strong> A hybrid product developed privately but subject to HDB rules for the first 10 years. After 10 years, fully privatised. Income ceiling applies (S$16,000/month as at 2024). EC prices sit between HDB and private condominiums.</li>
+</ul>
+<h3>Private Property</h3>
+<ul>
+    <li><strong>Condominiums:</strong> Strata-titled private residential units with facilities. No income ceiling. Available to Singapore Citizens, PRs, and foreigners (with ABSD).</li>
+    <li><strong>Landed property:</strong> Terrace houses, semi-detached, bungalows. Restricted — foreigners typically cannot purchase without approval from the Singapore Land Authority.</li>
+</ul>
+<div class="key-term">
+    <span class="kt-label">Regulatory Framework</span>
+    <span class="kt-term">MSR and TDSR</span>
+    <p><strong>Mortgage Servicing Ratio (MSR):</strong> For HDB flats and ECs, your monthly mortgage repayment cannot exceed 30% of gross monthly income.<br><br>
+    <strong>Total Debt Servicing Ratio (TDSR):</strong> For all property loans, your total monthly debt repayments (all loans combined) cannot exceed 55% of gross monthly income. These are MAS-mandated caps, not bank guidelines — they cannot be waived.</p>
+</div>
+`},
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 2 · Lesson 1</div>
+<h2>Eligibility — Who Can Buy What</h2>
+<p>Singapore's housing market is tightly regulated by citizenship, income, family status, and existing property ownership. Before viewing a single flat, confirm your eligibility.</p>
+<h3>HDB BTO Eligibility (core requirements)</h3>
+<ul>
+    <li>At least <strong>one applicant must be a Singapore Citizen</strong> (Singapore PRs can only apply for 2-room Flexi flats in non-mature estates; they cannot apply for most BTO flat types)</li>
+    <li>You must form a <strong>family nucleus</strong> (married couple, parents + children, or fiancé/fiancée scheme)</li>
+    <li>Monthly household income ≤ <strong>S$14,000</strong> (for 4-room and larger; lower for 3-room)</li>
+    <li>You must <strong>not own any other property</strong> (local or overseas)</li>
+    <li>Subject to HDB's <strong>Ethnic Integration Policy</strong> quotas per block</li>
+</ul>
+<h3>Resale HDB Eligibility</h3>
+<p>More flexible than BTO. Singles (≥35 years old) can buy resale flats. PRs can buy resale HDB flats after 3 years of PR status. Income ceiling does not apply unless claiming CPF Housing Grants.</p>
+<h3>CPF Housing Grants</h3>
+<p>For eligible buyers, CPF Housing Grants reduce the effective purchase price significantly:</p>
+<ul>
+    <li><strong>Enhanced CPF Housing Grant (EHG):</strong> Up to S$120,000 for BTO; up to S$60,000 for resale. Income-based, tiered grant — the lower your income, the higher the grant.</li>
+    <li><strong>Family Grant:</strong> Up to S$50,000 for resale flats. For first-timer families.</li>
+    <li><strong>Proximity Housing Grant (PHG):</strong> Up to S$30,000 for buying within 4km of parents/children.</li>
+</ul>
+<div class="callout">
+    <div class="callout-icon">⚡</div>
+    <p><strong>Ownership history matters:</strong> If you have previously received a housing subsidy, your second property is subject to a <strong>Resale Levy</strong> — a clawback mechanism ensuring subsidies flow to first-time buyers. The levy ranges from S$15,000 to S$55,000 depending on the flat type previously subsidised. Plan your housing journey with this in mind from the start.</p>
+</div>
+`},
+{ type:'quiz',
+    question:'James (Singapore Citizen, age 30) and Sarah (Singapore PR, age 29) are engaged and want to apply for a BTO flat. Are they eligible?',
+    options:[
+        'No — both applicants must be Singapore Citizens for BTO',
+        'Yes — at least one Singapore Citizen in the application is sufficient for most BTO flat types',
+        'Yes — but only if their combined income is below S$7,000/month',
+        'No — engaged (not yet married) couples cannot apply for BTO'
+    ],
+    answer:1,
+    explanation:'HDB BTO requires at least one Singapore Citizen in the application — having one SC and one PR satisfies this requirement. The couple can apply under the Fiancé/Fiancée Scheme, which allows applications before marriage as long as the marriage is completed within a specified timeframe. They would also need to meet income ceiling and property ownership requirements.'
+}
+]
+},
+{
+id:2,
+title:'HDB Loan vs Bank Loan',
+subtitle:'Two financing routes — and how to choose between them',
+desc:'One offers certainty with a slightly higher rate, the other potentially lower rates but more risk. The right choice depends on your situation, not just the advertised number.',
+pages:[
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 2 · Lesson 2</div>
+<h2>The HDB Concessionary Loan</h2>
+<p>The HDB loan is available only to eligible buyers of HDB flats (not private property). It is provided directly by HDB, not a commercial bank.</p>
+<table class="comp-table">
+    <thead><tr><th>Feature</th><th class="h-hdb">HDB Loan</th></tr></thead>
+    <tbody>
+        <tr><td>Interest Rate</td><td class="val-hdb">2.6% p.a. (CPF OA rate + 0.1%)<br><span style="font-size:.82rem;color:#64748b">Adjusts when CPF OA rate changes — currently stable</span></td></tr>
+        <tr><td>Loan-to-Value (LTV)</td><td class="val-hdb">Up to 80% of purchase price or value</td></tr>
+        <tr><td>Down Payment</td><td class="val-hdb">20% — can be fully paid with CPF OA</td></tr>
+        <tr><td>Cash Required</td><td class="val-hdb" style="color:#059669"><strong>S$0 cash</strong> — if CPF OA is sufficient</td></tr>
+        <tr><td>Prepayment Penalty</td><td class="val-hdb">None — repay extra anytime</td></tr>
+        <tr><td>Eligibility</td><td>Income ≤ S$14,000/month; buying HDB flat only; no other property</td></tr>
+        <tr><td>Switching</td><td>Can refinance to bank loan at any time. <strong>Cannot switch back to HDB loan.</strong></td></tr>
+    </tbody>
+</table>
+<div class="callout">
+    <div class="callout-icon">💡</div>
+    <p>The HDB loan rate tracks the CPF Ordinary Account rate (currently 2.5%) plus 0.1%. This rate is set by the government and has remained at 2.6% for many years. It provides <strong>certainty</strong> — you always know exactly what you will pay each month, for the entire loan tenure.</p>
+</div>
+`},
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 2 · Lesson 2</div>
+<h2>The Bank Loan</h2>
+<p>Bank loans are available from all major Singapore banks (DBS, OCBC, UOB, Standard Chartered, etc.) and can finance both HDB flats and private property.</p>
+<table class="comp-table">
+    <thead><tr><th>Feature</th><th class="h-bank">Bank Loan (HDB flat)</th></tr></thead>
+    <tbody>
+        <tr><td>Interest Rate</td><td class="val-bank">3.0–4.5% p.a. (2025 rates)<br><span style="font-size:.82rem;color:#64748b">Fixed packages (2–5 years) then reprices; floating packages tied to SORA</span></td></tr>
+        <tr><td>Loan-to-Value (LTV)</td><td class="val-bank">Up to 75% of purchase price or value</td></tr>
+        <tr><td>Down Payment</td><td class="val-bank">25% total</td></tr>
+        <tr><td>Cash Required</td><td class="val-warn"><strong>Minimum 5% must be cash.</strong><br>Remaining 20% can be CPF OA.</td></tr>
+        <tr><td>Prepayment Penalty</td><td class="val-bank">Yes — typically applies during lock-in period (1–5 years)</td></tr>
+        <tr><td>Eligibility</td><td>Subject to TDSR/MSR only; no income ceiling</td></tr>
+        <tr><td>Switching</td><td>Can refinance freely after lock-in period. Cannot switch to HDB loan.</td></tr>
+    </tbody>
+</table>
+<div class="warning-box">
+    <span class="wl">Rate Risk</span>
+    <p>Bank loan rates fluctuate. A fixed rate package (e.g., 3.1% for 2 years) is only fixed for the lock-in period — after which it reprices to the prevailing rate, which may be higher. Floating rate packages (SORA-pegged) can move up or down with market conditions. You must stress-test your budget against higher rates before committing.</p>
+</div>
+`},
+{ type:'interactive', content:`
+<div class="activity-label">Interactive · Loan Comparison</div>
+<p style="font-size:.95rem;color:#404040;margin-bottom:20px;line-height:1.7">The same S$500,000 HDB flat, financed two different ways. Study how the rate and LTV difference plays out over 25 years.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+<div class="mortgage-visual">
+    <div class="mv-header" style="background:#1D4ED8"><h3>HDB Concessionary Loan</h3><p>S$500,000 flat · 25 years · 2.6% p.a.</p></div>
+    <div class="mv-stats">
+        <div class="mv-stat"><div class="mv-stat-val" style="color:#2563EB">S$0</div><div class="mv-stat-label">Cash needed</div></div>
+        <div class="mv-stat"><div class="mv-stat-val" style="color:#2563EB">S$1,814</div><div class="mv-stat-label">Monthly repayment</div></div>
+        <div class="mv-stat"><div class="mv-stat-val" style="color:#2563EB">S$144k</div><div class="mv-stat-label">Total interest paid</div></div>
+    </div>
+    <div class="mv-amort">
+        <div class="mv-amort-title">Principal vs Interest Over Time</div>
+        <div class="mv-year-row"><div class="mv-year-label">Yr 1</div><div class="mv-bar-stack"><div class="mv-interest-bar" style="width:69%"></div><div class="mv-capital-bar" style="width:31%"></div></div><div class="mv-year-amt">S$21.8k</div></div>
+        <div class="mv-year-row"><div class="mv-year-label">Yr 5</div><div class="mv-bar-stack"><div class="mv-interest-bar" style="width:62%"></div><div class="mv-capital-bar" style="width:38%"></div></div><div class="mv-year-amt">S$21.8k</div></div>
+        <div class="mv-year-row"><div class="mv-year-label">Yr 10</div><div class="mv-bar-stack"><div class="mv-interest-bar" style="width:51%"></div><div class="mv-capital-bar" style="width:49%"></div></div><div class="mv-year-amt">S$21.8k</div></div>
+        <div class="mv-year-row"><div class="mv-year-label">Yr 15</div><div class="mv-bar-stack"><div class="mv-interest-bar" style="width:37%"></div><div class="mv-capital-bar" style="width:63%"></div></div><div class="mv-year-amt">S$21.8k</div></div>
+        <div class="mv-year-row"><div class="mv-year-label">Yr 20</div><div class="mv-bar-stack"><div class="mv-interest-bar" style="width:20%"></div><div class="mv-capital-bar" style="width:80%"></div></div><div class="mv-year-amt">S$21.8k</div></div>
+    </div>
+    <div class="mv-legend"><div class="mv-legend-item"><div class="mv-legend-dot" style="background:#fca5a5"></div>Interest</div><div class="mv-legend-item"><div class="mv-legend-dot" style="background:#93c5fd"></div>Principal</div></div>
+</div>
+<div class="mortgage-visual">
+    <div class="mv-header" style="background:#92400e"><h3>Bank Loan</h3><p>S$500,000 flat · 25 years · 3.75% p.a.</p></div>
+    <div class="mv-stats">
+        <div class="mv-stat"><div class="mv-stat-val" style="color:#d97706">S$25k</div><div class="mv-stat-label">Cash needed (min)</div></div>
+        <div class="mv-stat"><div class="mv-stat-val" style="color:#d97706">S$1,928</div><div class="mv-stat-label">Monthly repayment</div></div>
+        <div class="mv-stat"><div class="mv-stat-val" style="color:#d97706">S$203k</div><div class="mv-stat-label">Total interest paid</div></div>
+    </div>
+    <div class="mv-amort">
+        <div class="mv-amort-title">Principal vs Interest Over Time</div>
+        <div class="mv-year-row"><div class="mv-year-label">Yr 1</div><div class="mv-bar-stack"><div class="mv-interest-bar" style="width:76%"></div><div class="mv-capital-bar" style="width:24%"></div></div><div class="mv-year-amt">S$23.1k</div></div>
+        <div class="mv-year-row"><div class="mv-year-label">Yr 5</div><div class="mv-bar-stack"><div class="mv-interest-bar" style="width:70%"></div><div class="mv-capital-bar" style="width:30%"></div></div><div class="mv-year-amt">S$23.1k</div></div>
+        <div class="mv-year-row"><div class="mv-year-label">Yr 10</div><div class="mv-bar-stack"><div class="mv-interest-bar" style="width:59%"></div><div class="mv-capital-bar" style="width:41%"></div></div><div class="mv-year-amt">S$23.1k</div></div>
+        <div class="mv-year-row"><div class="mv-year-label">Yr 15</div><div class="mv-bar-stack"><div class="mv-interest-bar" style="width:45%"></div><div class="mv-capital-bar" style="width:55%"></div></div><div class="mv-year-amt">S$23.1k</div></div>
+        <div class="mv-year-row"><div class="mv-year-label">Yr 20</div><div class="mv-bar-stack"><div class="mv-interest-bar" style="width:26%"></div><div class="mv-capital-bar" style="width:74%"></div></div><div class="mv-year-amt">S$23.1k</div></div>
+    </div>
+    <div class="mv-legend"><div class="mv-legend-item"><div class="mv-legend-dot" style="background:#fca5a5"></div>Interest</div><div class="mv-legend-item"><div class="mv-legend-dot" style="background:#93c5fd"></div>Principal</div></div>
+</div>
+</div>
+<div class="example-box">
+    <span class="ex-label">Key Takeaway</span>
+    <p>In a high-rate environment like 2024–2025, the HDB loan at 2.6% often results in lower total interest paid than a bank loan at 3.5–4.5%, even though the bank loan is on a smaller principal (75% vs 80%). The HDB loan also requires no cash upfront. The main reason to choose a bank loan is if bank rates fall significantly below 2.6% — which happened during 2020–2021 when SIBOR was near zero.</p>
+</div>
+`},
+{ type:'quiz',
+    question:'A couple buys a S$600,000 HDB resale flat using a bank loan (75% LTV). The minimum cash they must produce is:',
+    options:[
+        'S$0 — the entire down payment can come from CPF OA',
+        'S$30,000 (5% of purchase price in cash)',
+        'S$60,000 (10% must be cash for bank loans)',
+        'S$150,000 (full 25% down payment must be cash)'
+    ],
+    answer:1,
+    explanation:'For HDB flat bank loans: the 25% down payment comprises 5% cash (mandatory) + 20% CPF OA. On S$600,000: 5% cash = S$30,000; 20% CPF = S$120,000. The HDB loan, by contrast, requires no cash — the entire 20% down payment can be from CPF OA. This cash requirement is why many buyers without significant savings prefer the HDB loan initially.'
+},
+{ type:'quiz',
+    question:'Which statement about the HDB Concessionary Loan is TRUE?',
+    options:[
+        'You can switch from a bank loan back to the HDB loan at any time',
+        'The HDB loan rate is permanently fixed for the entire loan tenure',
+        'The HDB loan rate is pegged to the CPF OA rate + 0.1% and can change if CPF rates change',
+        'The HDB loan requires 25% down payment'
+    ],
+    answer:2,
+    explanation:'The HDB loan rate is set at CPF Ordinary Account rate + 0.1%. The CPF OA rate is currently 2.5% (minimum set by statute), making the HDB loan rate 2.6%. If the CPF OA rate were to change, the HDB loan rate would change accordingly. Importantly: you can switch from HDB loan to bank loan, but cannot switch back. This is why some buyers start with the HDB loan as a stable base, then refinance to a bank loan if rates drop significantly.'
+}
+]
+},
+{
+id:3,
+title:'Hidden Costs Nobody Tells You',
+subtitle:'BSD, ABSD, and the things that shock first-time buyers',
+desc:'The purchase price is only the start. Budget for stamp duty, legal fees, and the renovation reality check — before you make an offer.',
+pages:[
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 2 · Lesson 3</div>
+<h2>Buyer's Stamp Duty (BSD)</h2>
+<p>BSD is a tax levied on all property purchases in Singapore — paid by the buyer on top of the purchase price. It is tiered based on the purchase price and is due within 14 days of signing the Option to Purchase.</p>
+<table class="comp-table">
+    <thead><tr><th>Purchase Price Band</th><th>BSD Rate</th></tr></thead>
+    <tbody>
+        <tr><td>First S$180,000</td><td>1%</td></tr>
+        <tr><td>Next S$180,000 (S$180,001–S$360,000)</td><td>2%</td></tr>
+        <tr><td>Next S$640,000 (S$360,001–S$1,000,000)</td><td>3%</td></tr>
+        <tr><td>Next S$500,000 (S$1,000,001–S$1,500,000)</td><td>4%</td></tr>
+        <tr><td>Above S$1,500,000</td><td>5%</td></tr>
+    </tbody>
+</table>
+<div class="example-box">
+    <span class="ex-label">BSD Calculation: S$550,000 HDB Resale Flat</span>
+    <p>
+    S$180,000 × 1% = <strong>S$1,800</strong><br>
+    S$180,000 × 2% = <strong>S$3,600</strong><br>
+    S$190,000 × 3% = <strong>S$5,700</strong><br>
+    <strong>Total BSD: S$11,100</strong>
+    </p>
+</div>
+<div class="key-term">
+    <span class="kt-label">Additional Tax</span>
+    <span class="kt-term">Additional Buyer's Stamp Duty (ABSD)</span>
+    <p>ABSD is levied on top of BSD for certain buyers. Rates effective April 2023:<br><br>
+    • Singapore Citizen, 1st property: <strong>0%</strong><br>
+    • Singapore Citizen, 2nd property: <strong>20%</strong><br>
+    • Singapore Citizen, 3rd+ property: <strong>30%</strong><br>
+    • Singapore PR, 1st property: <strong>5%</strong><br>
+    • Singapore PR, 2nd property: <strong>30%</strong><br>
+    • Foreigners (any property): <strong>60%</strong></p>
+</div>
+<p>On a S$1,500,000 condo, a foreigner would pay 60% ABSD = <strong>S$900,000</strong> in stamp duty alone. This is the government's most direct tool to cool foreign demand and speculative buying.</p>
+`},
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 2 · Lesson 3</div>
+<h2>The Other Costs Nobody Quotes You</h2>
+<p>Before making an offer on any property, build a complete cost model. The purchase price is not the total cost.</p>
+<h3>Transaction Costs</h3>
+<ul>
+    <li><strong>Legal / conveyancing fees:</strong> S$2,000–S$3,500 for a standard HDB resale transaction; S$3,000–S$5,000+ for private property. Covers the solicitor who handles title transfer and loan documentation.</li>
+    <li><strong>Valuation report:</strong> S$300–S$500. Required by HDB and most banks to confirm the property's market value before approving a loan.</li>
+    <li><strong>Agent commission (seller pays):</strong> Typically 1–2% of purchase price. Buyer typically pays nothing — but confirm this upfront.</li>
+</ul>
+<h3>Ongoing and Irregular Costs</h3>
+<ul>
+    <li><strong>Property tax (annual):</strong> Owner-occupied rates are significantly lower than non-owner-occupied. A S$550,000 flat in owner-occupier status: approximately S$1,000–S$1,400/year in property tax.</li>
+    <li><strong>HDB service and conservancy charges:</strong> S$20–S$90/month depending on flat type and town council. Covers lift maintenance, cleaning, estate management.</li>
+    <li><strong>Fire insurance:</strong> Mandatory for HDB flats under mortgage — approximately S$1.50 per S$1,000 of loan per year.</li>
+    <li><strong>Home contents insurance:</strong> Optional but strongly recommended. S$150–S$400/year for comprehensive coverage.</li>
+    <li><strong>Renovation:</strong> Budget S$30,000–S$80,000 for a standard 4-room HDB resale renovation. New BTOs often need S$30,000–S$50,000. Renovation is a significant cash outflow that many first-time buyers underestimate.</li>
+</ul>
+<div class="warning-box">
+    <span class="wl">Planning Rule of Thumb</span>
+    <p>For a S$550,000 HDB resale flat: BSD (~S$11,100) + legal fees (~S$3,000) + valuation (~S$400) + renovation (~S$50,000) + first year charges = <strong>approximately S$65,000–80,000 in costs on top of the down payment</strong>. A CPF OA balance that covers the down payment may leave you cash-poor for renovation. Plan for this gap well in advance.</p>
+</div>
+`},
+{ type:'quiz',
+    question:'A Singapore Citizen buying their first HDB flat at S$480,000. How much Buyer\'s Stamp Duty do they pay?',
+    options:[
+        'S$4,800 (1% flat rate)',
+        'S$9,000 (tiered: S$1,800 + S$3,600 + S$3,600)',
+        'S$14,400 (3% of S$480,000)',
+        'S$0 — first-time SC buyers are exempt from BSD'
+    ],
+    answer:1,
+    explanation:'BSD is calculated in tiers — not a flat percentage. On S$480,000: First S$180,000 × 1% = S$1,800. Next S$180,000 × 2% = S$3,600. Remaining S$120,000 × 3% = S$3,600. Total: S$9,000. There is no BSD exemption for first-time buyers. ABSD is 0% for SCs buying their first property, but BSD always applies to everyone.'
+}
+]
+}
+]
+},
+
+// ══════════════════════════════════════════════════
+// UNIT 3 — LIFE INSURANCE
+// ══════════════════════════════════════════════════
+{
+key:'insurance', icon: iconShield, title:'Life Insurance', eyebrow:'Unit 3',
+desc:'What life insurance is and isn\'t, how to compare term vs whole life vs ILPs, and a framework for calculating how much coverage you actually need.',
+lessons:[
+{
+id:1,
+title:'Do You Actually Need Life Insurance?',
+subtitle:'The honest answer — it depends entirely on who depends on you',
+desc:'MediShield Life is not life insurance. CareShield Life is not life insurance. Here\'s what life insurance actually is — and who genuinely needs it right now.',
+pages:[
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 3 · Lesson 1</div>
+<h2>What Life Insurance Actually Is</h2>
+<p>Life insurance is not about protecting yourself — you will not be alive to benefit from it. It is about protecting the <strong>people who depend on your income</strong>. If you die, a lump sum or regular income is paid to your chosen beneficiaries, enabling them to continue their lives without the financial catastrophe your death would otherwise cause.</p>
+<div class="key-term">
+    <span class="kt-label">The Core Question</span>
+    <span class="kt-term">Who Would Suffer Financially If You Died Tomorrow?</span>
+    <p>If your honest answer is "nobody" — a single person with no dependants and no significant debts — you may not need life insurance right now. If your answer includes a spouse, children, aging parents who depend on your financial support, or a mortgage your partner could not service alone — you need it, and likely more than you think.</p>
+</div>
+<h3>Key Terms</h3>
+<ul>
+    <li><strong>Sum Assured:</strong> The death benefit — the lump sum paid to your beneficiaries on your death or total permanent disability.</li>
+    <li><strong>Premium:</strong> What you pay to maintain the policy. Can be monthly or annual.</li>
+    <li><strong>Beneficiary:</strong> The person(s) who receive the payout. You name them when you buy the policy. Can be changed.</li>
+    <li><strong>Total Permanent Disability (TPD):</strong> Most life policies also pay out on TPD — typically defined as being unable to engage in any occupation for life. This is not the same as temporary disability.</li>
+    <li><strong>Nomination:</strong> For your policy to bypass probate and pay beneficiaries quickly, you must formally nominate them under the Insurance Act. Without a valid nomination, the sum assured forms part of your estate and may be delayed significantly.</li>
+</ul>
+`},
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 3 · Lesson 1</div>
+<h2>Life Insurance vs MediShield Life vs CareShield Life</h2>
+<p>Singapore has a well-developed social insurance framework — but each product covers a <em>different risk</em>. Holding one does not substitute for the others.</p>
+<table class="comp-table">
+    <thead><tr><th>Product</th><th>What It Pays For</th><th>Compulsory?</th></tr></thead>
+    <tbody>
+        <tr><td>MediShield Life</td><td>Large hospitalisation bills and certain outpatient treatments. Covers a portion of Class B2/C ward costs.</td><td>Yes — all citizens and PRs</td></tr>
+        <tr><td>CareShield Life</td><td>Monthly cash payout (S$600+/month and increasing) if you are severely disabled and cannot perform ≥3 Activities of Daily Living.</td><td>Yes — all citizens/PRs born 1980 or later</td></tr>
+        <tr><td>Integrated Shield Plan (IP)</td><td>Top-up to MediShield Life for Class A/B1 or private hospital coverage. Premium varies; purchased from private insurers.</td><td>No — optional</td></tr>
+        <tr><td><strong>Life Insurance</strong></td><td><strong>Lump sum paid to your beneficiaries on your death or TPD.</strong> Replaces your future income for those who depend on it.</td><td>No — but essential if you have dependants</td></tr>
+    </tbody>
+</table>
+<div class="warning-box">
+    <span class="wl">Common Misconception</span>
+    <p>Many people believe their MediShield Life or workplace group insurance covers them adequately. MediShield Life covers hospital bills — it pays nothing to your family on your death. Workplace group term insurance typically covers 1–2× your annual salary — a S$5,000/month earner would get S$60,000–S$120,000. If you have a mortgage of S$400,000 and young children, this is severely insufficient. Review your group policy terms carefully.</p>
+</div>
+<h3>When in Your 20s–30s is Life Insurance Most Important?</h3>
+<ul>
+    <li>You have married and your spouse relies (even partially) on your income</li>
+    <li>You have children — or plan to</li>
+    <li>You have taken on a mortgage that both incomes are needed to service</li>
+    <li>You provide financial support to elderly parents</li>
+    <li>You have significant outstanding debt that would pass complications to a co-signer</li>
+</ul>
+<p>Your 20s–30s is also the <strong>cheapest time to buy life insurance</strong>. A S$1,000,000 term policy at age 28 may cost S$50–80/month. The same policy at age 38 may cost S$90–130/month. At 48, S$200+/month. Health conditions that develop with age can also make you uninsurable or dramatically increase premiums.</p>
+`},
+{ type:'quiz',
+    question:'Your colleague says: "I already have MediShield Life and my company\'s group insurance — I don\'t need to buy life insurance separately." What is wrong with this reasoning?',
+    options:[
+        'Nothing — MediShield Life and group insurance together provide complete life coverage',
+        'MediShield Life covers hospitalisation costs, not death — and group insurance typically provides only 1–2× annual salary, which is insufficient for most people with dependants',
+        'MediShield Life only covers those born before 1980; others need private life insurance',
+        'Group insurance cannot be combined with MediShield Life coverage'
+    ],
+    answer:1,
+    explanation:'MediShield Life pays for large hospital bills — it does not pay a lump sum to your family when you die. Group insurance from your employer typically covers 1–2× annual salary, which for a S$72,000/year earner is S$72,000–S$144,000. If you have a S$400,000 mortgage and two children, this leaves a massive coverage gap. Group insurance also disappears the moment you change jobs. Separate life insurance addresses all these gaps.'
+}
+]
+},
+{
+id:2,
+title:'Term vs Whole Life vs ILP',
+subtitle:'Three very different products sold under the same label',
+desc:'A 30-year term plan and an ILP can both be sold as "life insurance." They cost dramatically different amounts, work completely differently, and suit different needs.',
+pages:[
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 3 · Lesson 2</div>
+<h2>Term Life Insurance — Pure Protection</h2>
+<p>Term insurance provides a death benefit for a defined period — 10, 20, 30 years, or until a set age. If you die within the term, your beneficiaries receive the sum assured. If you outlive the term, the policy expires and you receive nothing back.</p>
+<p>This "nothing back" feature makes term insurance feel expensive to many people — but it is precisely what makes it the most efficient protection per dollar spent.</p>
+<div class="key-term">
+    <span class="kt-label">Why Term Wins on Pure Protection</span>
+    <span class="kt-term">The Math of Premiums</span>
+    <p>A 30-year-old male, non-smoker, buying S$1,000,000 sum assured for 30 years: approximately <strong>S$55–90/month</strong> in term premiums. The equivalent whole life policy with S$1,000,000 coverage: <strong>S$400–700/month</strong> or more. The term plan delivers the same death benefit for a fraction of the cost during the years you most need protection — when your children are young and your mortgage is large.</p>
+</div>
+<h3>"Buy Term, Invest the Difference"</h3>
+<p>This is the most cited advice in Singapore financial planning communities, and for most people with straightforward protection needs, it holds. Buy term for the insurance need. Take the S$300–500/month saved versus whole life and invest it in a low-cost index fund or SRS account. Over 30 years, that invested difference can build a nest egg that makes you self-insured by the time the term expires.</p>
+<h3>Key Considerations for Term</h3>
+<ul>
+    <li>Buy enough coverage: sum assured should cover your full protection need (see Lesson 3), not the minimum that feels affordable</li>
+    <li>Lock in the rate while you are young and healthy — premiums are guaranteed level for the term period</li>
+    <li>Consider renewability: some term plans allow renewal without medical underwriting at expiry (at higher premiums)</li>
+    <li>Singapore has term plans available on LIA-accredited comparison platforms like comparefirst.sg</li>
+</ul>
+`},
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 3 · Lesson 2</div>
+<h2>Whole Life Insurance</h2>
+<p>Whole life insurance provides coverage for your entire life (typically to age 99 or 120) and accumulates a <strong>cash value</strong> component over time. You can surrender the policy and receive this cash value, or borrow against it.</p>
+<p>Whole life makes sense in specific circumstances:</p>
+<ul>
+    <li><strong>Estate planning:</strong> Guaranteed payout regardless of when you die — useful for leaving something to children or funding inheritance tax in jurisdictions where it applies</li>
+    <li><strong>Parents covering children:</strong> Locking in coverage when a child is young and healthy at the lowest possible premium</li>
+    <li><strong>Business uses:</strong> Key person insurance, partnership buy-sell agreements</li>
+</ul>
+<p>For the majority of young working adults with a protection need and finite budget, whole life is likely not the right starting point. The premiums are significantly higher for the same coverage amount, and the cash value savings component typically returns 3–5% projected — which most investors can beat with a diversified portfolio.</p>
+<h2 style="margin-top:48px">Investment-Linked Plans (ILPs)</h2>
+<p>ILPs split your premium: one portion buys insurance units (protection), the rest is invested in your choice of sub-funds (unit trusts). They are sold as a way to combine insurance and investment in one product.</p>
+<div class="warning-box">
+    <span class="wl">Why ILPs Draw Criticism</span>
+    <p><strong>Costs are high:</strong> Total expense ratios of 1.5–3.5% annually on the investment component, plus mortality charges, administration fees, and sales charges — compared to 0.2–0.5% for index funds.<br><br>
+    <strong>Commissions are highest for ILPs:</strong> Financial advisers receive significantly larger commissions for ILP sales than for term plans. This creates a structural conflict of interest.<br><br>
+    <strong>Early surrender is costly:</strong> Surrendering an ILP in the first 3–7 years can mean losing 20–50% of premiums paid due to surrender charges.<br><br>
+    <strong>Returns are not guaranteed:</strong> Unlike whole life which has guaranteed + projected bonuses, ILP investment returns depend entirely on sub-fund performance.</p>
+</div>
+<div class="callout">
+    <div class="callout-icon">💡</div>
+    <p>This does not mean ILPs are always wrong — but before buying one, demand full fee disclosure. Ask the adviser to show you the total cost of the ILP vs buying a term plan + investing the difference in a comparable low-cost fund. If they cannot or will not produce this comparison, that is informative.</p>
+</div>
+`},
+{ type:'quiz',
+    question:'A 29-year-old with two young children is comparing: (A) S$1,000,000 term life for 30 years at S$75/month, or (B) S$200,000 whole life coverage at S$480/month. Which provides better protection per dollar in the years when protection is most needed?',
+    options:[
+        'Option B — whole life has cash value and lasts forever',
+        'Option A — 5× the coverage for one-sixth the cost during the critical 30-year period',
+        'They are equivalent — same product category',
+        'Option B — whole life premiums are tax-deductible in Singapore'
+    ],
+    answer:1,
+    explanation:'Option A provides S$1,000,000 protection for S$75/month. Option B provides S$200,000 protection for S$480/month — at a cost 6.4× higher per month for one-fifth the coverage. During the years when protection need is highest (young children, mortgage, spouse dependency), the term plan delivers vastly superior coverage per dollar. Whole life\'s cash value and permanence are real features — but for most 29-year-olds, they are secondary to adequate protection at this life stage.'
+},
+{ type:'quiz',
+    question:'Why do financial advisers sometimes recommend ILPs over simpler term plans?',
+    options:[
+        'ILPs always provide better returns than index funds',
+        'ILPs have zero fees by regulation',
+        'Advisers typically receive significantly higher commissions on ILP sales than on term plans',
+        'ILPs are mandatory for MAS-licensed advisers to offer'
+    ],
+    answer:2,
+    explanation:'The commission structure on ILPs in Singapore has historically been significantly higher than on term plans — sometimes 2–5× more in the first year. This creates a structural incentive to recommend the more expensive product. MAS has introduced mandatory disclosure requirements for commissions, and the industry has moved toward more fee-based advice — but always ask your adviser to disclose their commission before purchasing. An adviser who cannot answer this question clearly is a red flag.'
+}
+]
+},
+{
+id:3,
+title:'How Much Coverage Do You Actually Need?',
+subtitle:'Two frameworks for calculating your real number',
+desc:'The S$100,000 group policy your employer provides might protect a bicycle. Here\'s how to calculate the right number for your actual situation.',
+pages:[
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 3 · Lesson 3</div>
+<h2>The Income Replacement Method</h2>
+<p>The most widely used rule of thumb: <strong>9–10× your gross annual income</strong>. This rough estimate reflects the capital needed to generate an income stream that replaces your earnings indefinitely, assuming a conservative 5% investment return.</p>
+<div class="example-box">
+    <span class="ex-label">Example: Wei Ling, 32</span>
+    <p>Annual income: S$78,000 (S$6,500/month)<br>
+    Coverage estimate: S$78,000 × 10 = <strong>S$780,000</strong><br>
+    Reasoning: S$780,000 invested at 5% generates S$39,000/year — approximately half her income, supplementing a spouse's income to maintain the family's lifestyle.</p>
+</div>
+<p>This method is a starting point. Adjust upward for:</p>
+<ul>
+    <li>Younger children (more years of dependency ahead)</li>
+    <li>Single-income household (spouse has no fallback income)</li>
+    <li>Higher mortgage balance outstanding</li>
+    <li>Parents who depend on your financial support</li>
+</ul>
+<div class="key-term">
+    <span class="kt-label">Concept</span>
+    <span class="kt-term">Human Life Value (HLV)</span>
+    <p>Your economic worth to your dependants — approximately the present value of your future earnings. A 30-year-old earning S$72,000/year with 35 working years remaining has a HLV of roughly S$1.2–1.8 million depending on career trajectory and discount rate. Most people are significantly underinsured relative to their HLV.</p>
+</div>
+`},
+{ type:'text', content:`
+<div class="page-eyebrow">Unit 3 · Lesson 3</div>
+<h2>The DIME Method</h2>
+<p>DIME provides a more precise calculation by itemising each specific financial obligation your dependants would face:</p>
+<ul>
+    <li><strong>D — Debts:</strong> All outstanding loans that would need to be cleared (excluding mortgage, which is calculated separately). Credit card balances, car loans, personal loans.</li>
+    <li><strong>I — Income:</strong> Annual income × the number of years until your youngest child reaches financial independence (usually age 21 or 25).</li>
+    <li><strong>M — Mortgage:</strong> Outstanding mortgage balance. Your family should be able to pay off the home outright.</li>
+    <li><strong>E — Education:</strong> Estimated total cost of all children's education through university.</li>
+</ul>
+<div class="example-box">
+    <span class="ex-label">Worked Example: Arjun, 34</span>
+    <p>Annual income: S$90,000 | Car loan outstanding: S$25,000 | Mortgage outstanding: S$380,000 | Two children, ages 3 and 6 | Spouse earns S$48,000 (can cover basic expenses if needed)<br><br>
+    <strong>D:</strong> S$25,000 (car loan)<br>
+    <strong>I:</strong> S$90,000 × 18 years (until youngest child is 21) = S$1,620,000<br>
+    <strong>M:</strong> S$380,000<br>
+    <strong>E:</strong> S$60,000 × 2 children = S$120,000 (estimated university cost each)<br><br>
+    <strong>DIME Total: S$2,145,000</strong><br><br>
+    Adjust down by spouse's earning potential over those years. A reasonable coverage target: <strong>S$1,500,000 – S$2,000,000</strong>.<br><br>
+    Arjun's current group insurance: S$90,000. <strong>He is underinsured by approximately S$1.5M.</strong></p>
+</div>
+<h3>Getting Quotes</h3>
+<p>Singapore has several platforms for comparing term life quotes:</p>
+<ul>
+    <li><strong>comparefirst.sg</strong> — MAS-governed comparison portal for direct life insurance and investment products</li>
+    <li><strong>moneysmart.sg, singsaver.com.sg</strong> — commercial comparison sites with broader options and instant quotes</li>
+    <li><strong>Direct from insurer:</strong> AIA, Prudential, NTUC Income, Great Eastern, Manulife, Singlife all offer online term quote tools</li>
+</ul>
+<p>Always compare on an EIR-equivalent basis (total premiums paid over the term), not just monthly premium. Medical underwriting is required — disclose all health conditions accurately. Non-disclosure can invalidate a claim.</p>
+`},
+{ type:'quiz',
+    question:'Priya earns S$60,000/year. Using the 10× income rule of thumb, what is her starting coverage estimate? She has a S$350,000 mortgage — should she adjust from this base?',
+    options:[
+        'S$60,000 — just one year\'s income is sufficient',
+        'S$600,000 base; yes, adjust upward because the mortgage alone represents 58% of that estimate',
+        'S$300,000 — the rule is 5× income',
+        'S$600,000 base; no adjustment needed — the rule already accounts for mortgages'
+    ],
+    answer:1,
+    explanation:'10× S$60,000 = S$600,000 base estimate. But Priya\'s mortgage of S$350,000 already consumes 58% of this sum assured, leaving only S$250,000 for income replacement and other needs. The DIME method applied to her situation would likely suggest coverage of S$900,000–S$1,200,000 or more, depending on dependants and other debts. The 10× rule is a floor, not a ceiling — and for anyone with a large mortgage, it often underestimates the real need.'
+}
+]
+}
+]
+}
+
+]}};
+
+// ── Engine ──
+function showView(v) {
+    document.getElementById('dashboard-view').style.display  = v==='dashboard' ? 'block' : 'none';
+    document.getElementById('reader-view').style.display     = v==='reader'    ? 'flex'  : 'none';
+    document.getElementById('completion-view').style.display = v==='completion'? 'flex'  : 'none';
+}
+
+function buildNav(tc) {
+    const el = document.getElementById('nav-items');
+    el.innerHTML = '';
+    tc.units.forEach(unit => {
+        const div = document.createElement('div');
+        div.className = 'nav-item';
+        div.id = 'nav-' + unit.key;
+        div.onclick = () => switchModule(unit.key);
+        div.innerHTML = `
+            <div class="nav-icon">${unit.icon}</div>
+            <div class="nav-text">
+                <span class="nav-title">${unit.title}</span>
+                <span class="nav-sub">${unit.eyebrow}</span>
+            </div>
+        `;
+        el.appendChild(div);
+    });
+}
+
+function switchModule(key) {
+    currentModuleKey = key;
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    const navEl = document.getElementById('nav-' + key);
+    if (navEl) navEl.classList.add('active');
+    const unit = curricula[currentTierKey].units.find(u => u.key === key);
+    if (!unit) return;
+    document.getElementById('unit-eyebrow').textContent = unit.eyebrow;
+    document.getElementById('module-title-display').textContent = unit.title;
+    document.getElementById('module-desc-display').textContent = unit.desc;
+    buildLessonGrid(unit);
+    showView('dashboard');
+    document.getElementById('main-content').scrollTop = 0;
+}
+
+function buildLessonGrid(unit) {
+    const grid = document.getElementById('lesson-grid');
+    grid.innerHTML = '';
+    unit.lessons.forEach((lesson, i) => {
+        const nP = lesson.pages.length;
+        const nQ = lesson.pages.filter(p => p.type==='quiz').length;
+        const nI = lesson.pages.filter(p => p.type==='interactive').length;
+        const card = document.createElement('div');
+        card.className = 'lesson-card';
+        card.onclick = () => openLesson(lesson.id, unit.key);
+        card.innerHTML = `
+            <div class="lc-banner"></div>
+            <div class="lc-body">
+                <div class="lc-num">Lesson ${i + 1}</div>
+                <div class="lc-title">${lesson.title}</div>
+                <div class="lc-sub">${lesson.subtitle}</div>
+                <div class="lc-desc">${lesson.desc}</div>
+                <div class="lc-footer">
+                    <div class="lc-tags">
+                        <span class="lc-tag">${iconDoc} ${nP} pages</span>
+                        ${nQ ? `<span class="lc-tag">${iconQ} ${nQ} quiz</span>` : ''}
+                        ${nI ? `<span class="lc-tag">${iconFlask} ${nI} activity</span>` : ''}
+                    </div>
+                    <span class="lc-action">Start →</span>
+                </div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function openLesson(id, unitKey) {
+    const unit = curricula[currentTierKey].units.find(u => u.key === unitKey);
+    if (!unit) return;
+    const lesson = unit.lessons.find(l => l.id === id);
+    if (!lesson) return;
+    currentLessonData = lesson;
+    currentLessonMeta = { unitKey, unitTitle: unit.title };
+    currentPageIndex = 0;
+    showView('reader');
+    renderPage();
+}
+
+function findNextLesson() {
+    const units = curricula[currentTierKey].units;
+    const uIdx = units.findIndex(u => u.key === currentLessonMeta.unitKey);
+    const unit = units[uIdx];
+    const lIdx = unit.lessons.findIndex(l => l.id === currentLessonData.id);
+    if (lIdx + 1 < unit.lessons.length) return { lesson: unit.lessons[lIdx+1], unit };
+    if (uIdx + 1 < units.length) { const nu = units[uIdx+1]; return { lesson: nu.lessons[0], unit: nu }; }
+    return null;
+}
+
+function openNextLesson() {
+    const next = findNextLesson();
+    if (next) { switchModule(next.unit.key); openLesson(next.lesson.id, next.unit.key); }
+}
+
+function closeLesson() {
+    showView('dashboard');
+    if (currentLessonMeta) switchModule(currentLessonMeta.unitKey);
+}
+
+function renderPage() {
+    const page  = currentLessonData.pages[currentPageIndex];
+    const total = currentLessonData.pages.length;
+    document.getElementById('page-counter').textContent = `${currentPageIndex+1} / ${total}`;
+    document.getElementById('progress-fill').style.width = ((currentPageIndex+1)/total*100) + '%';
+    document.getElementById('reader-breadcrumb').innerHTML = `${currentLessonMeta.unitTitle} / <strong>${currentLessonData.title}</strong>`;
+    const content = document.getElementById('reader-content');
+    const nextBtn = document.getElementById('next-btn');
+    nextBtn.disabled = false;
+    nextBtn.innerHTML = currentPageIndex < total-1 ? 'Continue <span>→</span>' : 'Complete Lesson ✓';
+    content.scrollTop = 0;
+
+    if (page.type === 'text') {
+        content.innerHTML = `<div class="prose-page">${page.content}</div>`;
+    } else if (page.type === 'quiz') {
+        quizAnswered = false;
+        content.innerHTML = `
+            <div class="quiz-wrap">
+                <div class="quiz-step">QUIZ · Question ${currentPageIndex+1} of ${total}</div>
+                <div class="quiz-q">${page.question}</div>
+                <div class="options-grid">
+                    ${page.options.map((opt,i)=>`
+                        <button class="option-btn" onclick="checkAnswer(${i},${page.answer})">
+                            <span class="option-letter">${['A','B','C','D'][i]}</span>
+                            <span class="option-text">${opt}</span>
+                        </button>
+                    `).join('')}
+                </div>
+                <div class="feedback-panel" id="feedback-panel"></div>
+            </div>
+        `;
+        nextBtn.disabled = true;
+    } else if (page.type === 'interactive') {
+        content.innerHTML = `<div class="activity-wrap">${page.content}</div>`;
+    }
+}
+
+function checkAnswer(selected, correct) {
+    if (quizAnswered) return;
+    quizAnswered = true;
+    const isCorrect = selected === correct;
+    const opts = document.querySelectorAll('.quiz-wrap .option-btn');
+    opts.forEach(b => b.disabled = true);
+    const page = currentLessonData.pages[currentPageIndex];
+    const fb = document.getElementById('feedback-panel');
+    if (isCorrect) {
+        opts[selected].classList.add('correct');
+        fb.className = 'feedback-panel correct-fb';
+        fb.innerHTML = `<div class="feedback-head">✓ Correct!</div><div class="feedback-body">${page.explanation}</div>`;
+    } else {
+        opts[selected].classList.add('wrong');
+        opts[correct].classList.add('correct');
+        fb.className = 'feedback-panel wrong-fb';
+        fb.innerHTML = `<div class="feedback-head">✗ Not quite</div><div class="feedback-body">${page.explanation}</div>`;
+    }
+    fb.style.display = 'block';
+    document.getElementById('next-btn').disabled = false;
+}
+
+function nextPage() {
+    const total = currentLessonData.pages.length;
+    if (currentPageIndex < total-1) { currentPageIndex++; renderPage(); }
+    else completeLesson();
+}
+
+function completeLesson() {
+    buildNav(curricula[currentTierKey]);
+    const next = findNextLesson();
+    const nb = document.getElementById('next-lesson-btn');
+    if (nb) { nb.style.display = next ? 'inline-flex' : 'none'; if (next) nb.textContent = `Next: ${next.lesson.title} →`; }
+    document.getElementById('completion-title').textContent = isFirst ? 'Lesson Complete' : 'Lesson Reviewed';
+    document.getElementById('completion-msg').textContent = currentLessonData.title;
+    showView('completion');
+}
+
+// ── Init ──
+window.addEventListener('DOMContentLoaded', () => {
+    const tc = curricula[currentTierKey];
+    buildNav(tc);
+    switchModule(tc.units[0].key);
+});
+</script>
+</body>
+</html>
